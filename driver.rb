@@ -3,8 +3,10 @@ require 'pry'
 
 require File.join(Dir.pwd, 'require_tree')
 
+FILENAME = ARGV[0]
+
 reader = InputReaderService.new
-reader.read_file(file: "sample_large.txt")
+reader.read_file(file: FILENAME)
 hotel = Hotel::Building.new(
   no_of_floors: reader.floors,
   main_corridors_per_floor: reader.main_corridors,

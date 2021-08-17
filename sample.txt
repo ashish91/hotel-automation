@@ -1,3 +1,3 @@
-2 1 2
-1 1 2
-0 1 2
+Floors: 2, Main Corridors: 1, Sub Corridors: 2
+Movement: 1, Floor: 1, Sub Corridor: 2
+Movement: 0, Floor: 1, Sub Corridor: 2
