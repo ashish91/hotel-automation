@@ -1,1 +1,1 @@
-# hotel-automation
+# Hotel Automation
