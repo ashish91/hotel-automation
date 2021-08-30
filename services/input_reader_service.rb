@@ -1,66 +1,26 @@
+require 'forwardable'
+require_relative 'commands/default_state_command'
+require_relative 'commands/movement_command'
+
 class InputReaderService
-  attr_reader :floors, :main_corridors, :sub_corridors, :commands
+  extend Forwardable
+
+  attr_reader :commands
+  def_delegators :@default_state, :floors, :main_corridors, :sub_corridors
 
   def initialize
     @commands = []
-    @floors = 0
-    @main_corridors = 0
-    @sub_corridors = 0
+    @default_state = DefaultStateCommand.new
   end
 
   def read_file(file:)
     File.open(file, "r") do |f|
-      f.each_line.with_index do |line, i|
-        if i == 0
-          commands = line.split(',').map(&:strip)
-          commands.each do |v|
-            attribute, val = v.split(':').map(&:strip)
-            case attribute
-            when "Floors"
-              @floors = val.to_i
-            when "Main Corridors"
-              @main_corridors = val.to_i
-            when "Sub Corridors"
-              @sub_corridors = val.to_i
-            end
-          end
-        else
-          commands = line.split(',').map(&:strip)
-          movement, floor, sub_corridor = nil, nil, nil
-          commands.each do |v|
-            attribute, val = v.split(':').map(&:strip)
-            case attribute
-            when "Movement"
-              movement = val.to_i
-            when "Floor"
-              floor = val.to_i
-            when "Sub Corridor"
-              sub_corridor = val.to_i
-            end
-          end
-          @commands.push(
-            MovementCommand.new(
-              movement: movement,
-              floor: floor,
-              sub_corridor: sub_corridor
-            )
-          )
-        end
+      @default_state.parse_line(f.readline)
+      f.each_line do |line|
+        movement_command = MovementCommand.new
+        movement_command.parse_line(line)
+        @commands.push(movement_command)
       end
-    end
-  end
-
-  class MovementCommand
-    attr_accessor :movement, :floor, :sub_corridor
-
-    def initialize(movement:, floor:, sub_corridor:)
-      @movement = movement
-      @floor = floor
-      @sub_corridor = sub_corridor
-    end
-
-    def movement?
-      @movement == 1
     end
   end
 end
